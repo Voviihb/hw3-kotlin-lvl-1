@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +35,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +49,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,8 +68,19 @@ class LoginScreenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        val viewModel = LoginViewModel(LoginRepo())
         return ComposeView(requireContext()).apply {
             setContent {
+                val loginForm by viewModel.loginFormState.collectAsState(
+                    initial = LoginForm(
+                        "",
+                        ""
+                    )
+                )
+                val logged by viewModel.isLogged.collectAsState(initial = false)
+                val loading by viewModel.loading.collectAsState(initial = false)
+                val errorMsg by viewModel.errorMessage.collectAsState(initial = "")
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -87,9 +104,9 @@ class LoginScreenFragment : Fragment() {
                                 contentDescription = getString(R.string.logo),
                                 modifier = Modifier
                                     .size(200.dp)
-
                             )
                         }
+
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier
@@ -98,8 +115,26 @@ class LoginScreenFragment : Fragment() {
                             verticalAlignment = Alignment.Top,
                             horizontalArrangement = Arrangement.Start
                         ) {
-                            LoginForm(parentFragmentManager)
+                            LoginForm(
+                                parentFragmentManager,
+                                viewModel,
+                                loginForm,
+                                loading,
+                                errorMsg
+                            )
                         }
+
+                        if (logged) {
+                            LaunchedEffect(Unit) {
+                                parentFragmentManager.beginTransaction()
+                                    .replace(
+                                        R.id.fragment_container,
+                                        AccountsScreenFragment.newInstance()
+                                    )
+                                    .commit()
+                            }
+                        }
+
                     }
                 }
             }
@@ -116,10 +151,15 @@ class LoginScreenFragment : Fragment() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginForm(parentFragmentManager: FragmentManager) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
+fun LoginForm(
+    parentFragmentManager: FragmentManager,
+    viewModel: LoginViewModel,
+    loginForm: LoginForm,
+    loading: Boolean,
+    error: String
+) {
+    var email by remember { mutableStateOf("") } // сделать синхронизацию с viewModel
+    var password by remember { mutableStateOf("") } // сделать очистку в случае ошибки
     Column(
     ) {
         Text(
@@ -144,15 +184,27 @@ fun LoginForm(parentFragmentManager: FragmentManager) {
                 ) {
                     TextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = {
+                            email = it
+                            viewModel.emailChanged(it)
+                        },
                         label = { Text("E-Mail") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         singleLine = true,
+                        isError = error != "",
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Email,
                                 contentDescription = "Email logo"
                             )
+                        },
+                        trailingIcon = {
+                            if (error != "")
+                                Icon(
+                                    Icons.Rounded.Close,
+                                    "error",
+                                    modifier = Modifier.padding(end = 16.dp)
+                                )
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.textFieldColors(
@@ -161,7 +213,8 @@ fun LoginForm(parentFragmentManager: FragmentManager) {
                             containerColor = Color.White,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent
                         )
                     )
                 }
@@ -183,11 +236,32 @@ fun LoginForm(parentFragmentManager: FragmentManager) {
                 ) {
                     TextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = {
+                            password = it
+                            viewModel.passwordChanged(it)
+                        },
                         label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         singleLine = true,
+                        isError = error != "",
+                        supportingText = {
+                            if (error != "") {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = error,
+                                    color = Color.Red
+                                )
+                            }
+                        },
+                        trailingIcon = {
+                            if (error != "")
+                                Icon(
+                                    Icons.Rounded.Close,
+                                    "error",
+                                    modifier = Modifier.padding(end = 16.dp)
+                                )
+                        },
                         leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Lock logo") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.textFieldColors(
@@ -196,16 +270,16 @@ fun LoginForm(parentFragmentManager: FragmentManager) {
                             containerColor = Color.White,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent
                         ),
                     )
                 }
             }
             IconButton(
                 onClick = {
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, AccountsScreenFragment.newInstance())
-                        .commit()
+                    viewModel.clearError()
+                    viewModel.login()
                 },
                 modifier = Modifier
                     .then(Modifier.size(64.dp))
@@ -217,6 +291,9 @@ fun LoginForm(parentFragmentManager: FragmentManager) {
                     modifier = Modifier.size(64.dp),
                     tint = colorResource(R.color.light_green),
                 )
+                if (loading) {
+                    ShowLoading()
+                }
             }
         }
 
@@ -260,3 +337,25 @@ fun LoginForm(parentFragmentManager: FragmentManager) {
 }
 
 
+@Composable
+fun ShowLoading() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            CircularProgressIndicator()
+        }
+
+    }
+}
+
+
+@Composable
+fun ShowError(msg: String) {
+    Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
+}
