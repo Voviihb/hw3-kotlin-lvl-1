@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -158,9 +159,11 @@ fun LoginForm(
     loading: Boolean,
     error: String
 ) {
-    var email by remember { mutableStateOf("") } // сделать синхронизацию с viewModel
-    var password by remember { mutableStateOf("") } // сделать очистку в случае ошибки
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    email = loginForm.email
     Column(
+        modifier = Modifier.imePadding()
     ) {
         Text(
             stringResource(id = R.string.login),
@@ -175,36 +178,41 @@ fun LoginForm(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Column {
+            Column(
+
+            ) {
                 Box(
                     modifier = Modifier
                         .width(300.dp)
                         .padding(top = 8.dp)
                         .clip(RoundedCornerShape(topEnd = 32.dp))
+
                 ) {
                     TextField(
                         value = email,
                         onValueChange = {
                             email = it
                             viewModel.emailChanged(it)
+                            viewModel.clearError()
                         },
-                        label = { Text("E-Mail") },
+                        label = { Text(stringResource(R.string.e_mail_hint)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         singleLine = true,
                         isError = error != "",
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Email,
-                                contentDescription = "Email logo"
+                                contentDescription = stringResource(R.string.email_logo)
                             )
                         },
                         trailingIcon = {
-                            if (error != "")
+                            if (error != "") {
                                 Icon(
                                     Icons.Rounded.Close,
-                                    "error",
+                                    stringResource(R.string.error),
                                     modifier = Modifier.padding(end = 16.dp)
                                 )
+                            }
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.textFieldColors(
@@ -239,8 +247,9 @@ fun LoginForm(
                         onValueChange = {
                             password = it
                             viewModel.passwordChanged(it)
+                            viewModel.clearError()
                         },
-                        label = { Text("Password") },
+                        label = { Text(stringResource(R.string.password_hint)) },
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         singleLine = true,
@@ -255,14 +264,22 @@ fun LoginForm(
                             }
                         },
                         trailingIcon = {
-                            if (error != "")
+                            if (error != "") {
                                 Icon(
                                     Icons.Rounded.Close,
-                                    "error",
+                                    stringResource(R.string.error),
                                     modifier = Modifier.padding(end = 16.dp)
                                 )
+                                password = ""
+                            }
                         },
-                        leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Lock logo") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Lock, contentDescription = stringResource(
+                                    R.string.lock_logo
+                                )
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.textFieldColors(
                             textColor = Color.Gray,
@@ -287,7 +304,7 @@ fun LoginForm(
             ) {
                 Icon(
                     painterResource(id = R.drawable.arrow_next_icon),
-                    contentDescription = "CheckLogo",
+                    contentDescription = stringResource(R.string.check_logo),
                     modifier = Modifier.size(64.dp),
                     tint = colorResource(R.color.light_green),
                 )
