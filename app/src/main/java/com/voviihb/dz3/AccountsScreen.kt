@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -36,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,12 +63,11 @@ class AccountsScreenFragment : Fragment() {
                         )
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.Top,
-//                            horizontalArrangement = Arrangement.Start
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxSize()
@@ -73,11 +75,10 @@ class AccountsScreenFragment : Fragment() {
                                 TopBar(totalMoney = totalMoney)
                                 Spacer(modifier = Modifier.height(20.dp))
                                 ConnectedBanks(context = LocalContext.current)
+                                Spacer(modifier = Modifier.height(20.dp))
+                                CurrentAccounts(context = LocalContext.current)
                             }
-
                         }
-
-
                     }
                 }
             }
@@ -111,7 +112,7 @@ fun TopBar(totalMoney: Double) {
                 )
                 Icon(
                     painterResource(id = R.drawable.ruble_icon),
-                    contentDescription = "Currency icon",
+                    contentDescription = stringResource(R.string.currency_icon),
                     modifier = Modifier.size(30.dp),
                 )
             }
@@ -133,7 +134,7 @@ fun TopBar(totalMoney: Double) {
             ) {
                 Icon(
                     Icons.Sharp.DateRange,
-                    contentDescription = "Date range",
+                    contentDescription = stringResource(R.string.date_range),
                     modifier = Modifier.size(30.dp),
                 )
             }
@@ -145,7 +146,7 @@ fun TopBar(totalMoney: Double) {
             ) {
                 Icon(
                     Icons.Sharp.Add,
-                    contentDescription = "Add",
+                    contentDescription = stringResource(R.string.add_icon),
                     modifier = Modifier.size(30.dp),
                 )
             }
@@ -167,8 +168,10 @@ fun ConnectedBanks(context: Context) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            "Connected banks", fontSize = 18.sp, fontWeight = FontWeight.Medium, modifier = Modifier
-                .padding(8.dp)
+            stringResource(R.string.connected_banks),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(vertical = 8.dp)
         )
         LazyRow() {
             item {
@@ -197,7 +200,7 @@ fun ConnectedBanks(context: Context) {
                         ) {
                             Icon(
                                 Icons.Sharp.Add,
-                                contentDescription = "Add",
+                                contentDescription = stringResource(R.string.add_icon),
                                 modifier = Modifier
                                     .size(30.dp)
                                     .padding(4.dp)
@@ -246,7 +249,7 @@ fun BankCard(context: Context, bank: Bank) {
             ) {
                 Image(
                     painterResource(id = bank.bankLogo),
-                    "Bank logo",
+                    stringResource(R.string.bank_logo),
                     modifier = Modifier.size(80.dp),
                     alignment = Alignment.Center
                 )
@@ -256,6 +259,174 @@ fun BankCard(context: Context, bank: Bank) {
             ) {
                 Text(text = bank.bankName, fontSize = 16.sp)
             }
+        }
+    }
+}
+
+
+@Composable
+fun CurrentAccounts(context: Context) {
+    val accountList = mutableListOf<Account>(
+        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
+        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
+        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
+        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
+        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
+        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
+        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
+        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
+        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
+        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
+        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
+        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
+        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
+        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
+        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
+        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
+        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
+        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            stringResource(R.string.current_accounts),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+        LazyColumn() {
+            items(accountList) { account ->
+                AccountsItem(context = context, account = account)
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .clickable {
+                            Toast
+                                .makeText(
+                                    context,
+                                    "add new selected",
+                                    Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        },
+                )
+                {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        Icons.Sharp.Add,
+                                        contentDescription = stringResource(R.string.add_icon),
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .padding(4.dp)
+                                            .border(1.dp, Color.Black)
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.new_card_bank_deposit_loan),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = colorResource(id = R.color.peachy_orange)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AccountsItem(context: Context, account: Account) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable {
+                Toast
+                    .makeText(
+                        context,
+                        "Selected ${account.accountName}",
+                        Toast.LENGTH_SHORT
+                    )
+                    .show()
+            },
+    )
+    {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painterResource(id = account.accountLogo),
+                            contentDescription = stringResource(R.string.account_logo),
+                            modifier = Modifier
+                                .size(30.dp)
+                                .padding(end = 8.dp)
+                        )
+                        Text(
+                            text = account.accountName,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black
+                        )
+                    }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text(
+                        text = String.format("%.2f", account.totalMoney),
+                        fontSize = 16.sp,
+                    )
+                    Icon(
+                        painterResource(id = R.drawable.ruble_icon),
+                        contentDescription = stringResource(R.string.currency_icon),
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+
+
+            }
+
         }
     }
 }

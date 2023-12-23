@@ -12,4 +12,12 @@
     <string name="check_logo">Check Logo</string>
     <string name="balance">Balance</string>
     <string name="new_connection">New connection</string>
+    <string name="connected_banks">Connected banks</string>
+    <string name="currency_icon">Currency icon</string>
+    <string name="date_range">Date range</string>
+    <string name="add_icon">Add icon</string>
+    <string name="bank_logo">Bank logo</string>
+    <string name="current_accounts">Current accounts</string>
+    <string name="new_card_bank_deposit_loan">New card, bank deposit, loan …</string>
+    <string name="account_logo">Account logo</string>
 </resources>
