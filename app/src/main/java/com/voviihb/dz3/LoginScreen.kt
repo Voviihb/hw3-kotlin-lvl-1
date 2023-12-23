@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -43,25 +43,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 
 
 class LoginScreenFragment : Fragment() {
@@ -90,8 +93,11 @@ class LoginScreenFragment : Fragment() {
                             contentScale = ContentScale.FillBounds
                         )
                 ) {
-                    Column {
-                        Spacer(modifier = Modifier.height(120.dp))
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -117,7 +123,6 @@ class LoginScreenFragment : Fragment() {
                             horizontalArrangement = Arrangement.Start
                         ) {
                             LoginForm(
-                                parentFragmentManager,
                                 viewModel,
                                 loginForm,
                                 loading,
@@ -150,18 +155,19 @@ class LoginScreenFragment : Fragment() {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginForm(
-    parentFragmentManager: FragmentManager,
     viewModel: LoginViewModel,
     loginForm: LoginForm,
     loading: Boolean,
     error: String
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    email = loginForm.email
+    var email by remember { mutableStateOf(loginForm.email) }
+    var password by remember { mutableStateOf(loginForm.password) }
+//    Log.d("taag", loginForm.email)
+    val (focusRequester) = FocusRequester.createRefs()
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier.imePadding()
     ) {
@@ -196,7 +202,13 @@ fun LoginForm(
                             viewModel.clearError()
                         },
                         label = { Text(stringResource(R.string.e_mail_hint)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusRequester.requestFocus() }
+                        ),
                         singleLine = true,
                         isError = error != "",
                         leadingIcon = {
@@ -251,7 +263,13 @@ fun LoginForm(
                         },
                         label = { Text(stringResource(R.string.password_hint)) },
                         visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { keyboardController?.hide() }
+                        ),
                         singleLine = true,
                         isError = error != "",
                         supportingText = {
@@ -280,7 +298,9 @@ fun LoginForm(
                                 )
                             )
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
                         colors = TextFieldDefaults.textFieldColors(
                             textColor = Color.Gray,
                             disabledTextColor = Color.Transparent,
@@ -297,6 +317,7 @@ fun LoginForm(
                 onClick = {
                     viewModel.clearError()
                     viewModel.login()
+                    keyboardController?.hide()
                 },
                 modifier = Modifier
                     .then(Modifier.size(64.dp))
@@ -371,8 +392,3 @@ fun ShowLoading() {
     }
 }
 
-
-@Composable
-fun ShowError(msg: String) {
-    Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
-}

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.random.Random
 
 class LoginViewModel constructor(private val loginRepo: LoginRepo) : ViewModel() {
     private val _loginFormState = MutableStateFlow(LoginForm("", ""))
@@ -30,7 +29,6 @@ class LoginViewModel constructor(private val loginRepo: LoginRepo) : ViewModel()
             try {
                 val response =
                     loginRepo.authUser(_loginFormState.value.email, _loginFormState.value.password)
-                Log.d("taag", response.toString())
                 if (response.isSuccessful) {
                     if (response.result) {
                         _isLogged.value = true
@@ -82,7 +80,7 @@ class LoginRepo {
     private val DEFAULT_ACCOUNT_PASSWORD = "Qwerty"
     private val DELAY_TIME = 2000L
     suspend fun authUser(email: String, password: String) = withContext(Dispatchers.IO) {
-        val success = Random.nextBoolean()
+        val success = true //Random.nextBoolean()
         val result = (email == DEFAULT_ACCOUNT_EMAIL && password == DEFAULT_ACCOUNT_PASSWORD)
 
         delay(DELAY_TIME)

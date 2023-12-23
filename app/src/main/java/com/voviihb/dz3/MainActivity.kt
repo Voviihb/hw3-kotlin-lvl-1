@@ -8,7 +8,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, AccountsScreenFragment.newInstance())
+            .add(R.id.fragment_container, LoginScreenFragment.newInstance())
             .commit()
     }
 }
