@@ -11,4 +11,5 @@
     <string name="lock_logo">Lock logo</string>
     <string name="check_logo">Check Logo</string>
     <string name="balance">Balance</string>
+    <string name="new_connection">New connection</string>
 </resources>
