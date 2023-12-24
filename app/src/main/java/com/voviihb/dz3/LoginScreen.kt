@@ -74,7 +74,8 @@ class LoginScreenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+//        val viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        val viewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
 
         Log.d("!!!", "vm " + viewModel.hashCode().toString())
 
@@ -178,7 +179,7 @@ fun LoginForm(
 ) {
     var email by remember { mutableStateOf(loginForm.email) }
     var password by remember { mutableStateOf(loginForm.password) }
-//    Log.d("taag", loginForm.email)
+    Log.d("taag", loginForm.email)
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(
