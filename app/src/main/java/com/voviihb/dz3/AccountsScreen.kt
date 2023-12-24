@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -45,15 +46,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 
 class AccountsScreenFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        val viewModel = ViewModelProvider(requireActivity())[AccountsViewModel::class.java]
+        viewModel.getAccountsScreenData(0) //fixme я не знаю, где запрашивать данные в первый раз
         return ComposeView(requireContext()).apply {
             setContent {
-                val totalMoney = 20000.15
+                val totalMoney by viewModel.totalMoney
+                val loading by viewModel.loading
+                val errorMsg by viewModel.errorMessage
+                val accounts = viewModel.accountsList
+                val banks = viewModel.banksList
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -74,22 +83,41 @@ class AccountsScreenFragment : Fragment() {
                             ) {
                                 TopBar(totalMoney = totalMoney)
                                 Spacer(modifier = Modifier.height(20.dp))
-                                ConnectedBanks(context = LocalContext.current)
+                                ConnectedBanks(context = LocalContext.current, bankList = banks)
                                 Spacer(modifier = Modifier.height(20.dp))
-                                CurrentAccounts(context = LocalContext.current)
+                                if (loading) {
+                                    ShowLoading()
+                                }
+                                CurrentAccounts(
+                                    context = LocalContext.current,
+                                    accountList = accounts
+                                )
+                                if (errorMsg != "") {
+                                    ShowError(msg = errorMsg)
+                                }
                             }
                         }
                     }
+
                 }
             }
         }
     }
 
     companion object {
+        private var screen: AccountsScreenFragment? = null
+
         @JvmStatic
-        fun newInstance() =
-            AccountsScreenFragment()
+        fun newInstance(): AccountsScreenFragment {
+            screen?.let {
+                return it
+            }
+            val instance = AccountsScreenFragment()
+            screen = instance
+            return instance
+        }
     }
+
 }
 
 
@@ -106,7 +134,7 @@ fun TopBar(totalMoney: Double) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = totalMoney.toString(),
+                    text = String.format("%.2f", totalMoney),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -158,12 +186,7 @@ fun TopBar(totalMoney: Double) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConnectedBanks(context: Context) {
-    val bankList = mutableListOf<Bank>(
-        Bank("Tinkoff", R.drawable.tinkoff_logo),
-        Bank("Sber", R.drawable.sber_logo),
-        Bank("AlfaBank", R.drawable.alfa_logo)
-    )
+fun ConnectedBanks(context: Context, bankList: List<Bank>) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -265,27 +288,8 @@ fun BankCard(context: Context, bank: Bank) {
 
 
 @Composable
-fun CurrentAccounts(context: Context) {
-    val accountList = mutableListOf<Account>(
-        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
-        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
-        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
-        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
-        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
-        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
-        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
-        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
-        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
-        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
-        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
-        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
-        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
-        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
-        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
-        Account("Tinkoff MIR", R.drawable.tinkoff_logo, 15000f.toDouble()),
-        Account("Sber Visa", R.drawable.sber_logo, 3500.15f.toDouble()),
-        Account("Cash", R.drawable.cash_icon, 1500f.toDouble()),
-    )
+fun CurrentAccounts(context: Context, accountList: List<Account>) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -429,4 +433,9 @@ fun AccountsItem(context: Context, account: Account) {
 
         }
     }
+}
+
+@Composable
+fun ShowError(msg: String) {
+    Toast.makeText(LocalContext.current, msg, Toast.LENGTH_LONG).show()
 }
