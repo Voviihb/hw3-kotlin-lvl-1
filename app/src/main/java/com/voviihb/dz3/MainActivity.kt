@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         val lsf = LoginScreenFragment.newInstance()
         Log.d("!!!", "lsf " + lsf.hashCode().toString())
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, lsf)
+            .replace(R.id.fragment_container, lsf)
             .commit()
     }
 }
