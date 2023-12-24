@@ -1,6 +1,7 @@
 package com.voviihb.dz3
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,6 +66,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 
 
 class LoginScreenFragment : Fragment() {
@@ -72,7 +74,10 @@ class LoginScreenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val viewModel = LoginViewModel(LoginRepo())
+        val viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+
+        Log.d("!!!", "vm " + viewModel.hashCode().toString())
+
         return ComposeView(requireContext()).apply {
             setContent {
                 val loginForm by viewModel.loginFormState.collectAsState(
@@ -148,9 +153,17 @@ class LoginScreenFragment : Fragment() {
     }
 
     companion object {
+        private var screen: LoginScreenFragment? = null
+
         @JvmStatic
-        fun newInstance() =
-            LoginScreenFragment()
+        fun newInstance(): LoginScreenFragment {
+            screen?.let {
+                return it
+            }
+            val instance = LoginScreenFragment()
+            screen = instance
+            return instance
+        }
     }
 }
 

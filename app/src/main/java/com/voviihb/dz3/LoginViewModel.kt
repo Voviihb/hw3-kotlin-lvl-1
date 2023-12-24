@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class LoginViewModel constructor(private val loginRepo: LoginRepo) : ViewModel() {
+class LoginViewModel : ViewModel() {
+    private val loginRepo: LoginRepo = LoginRepo()
+
     private val _loginFormState = MutableStateFlow(LoginForm("", ""))
     val loginFormState: StateFlow<LoginForm> = _loginFormState
 
