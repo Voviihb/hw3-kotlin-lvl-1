@@ -40,11 +40,19 @@ class AccountsViewModel : ViewModel() {
             try {
                 val response =
                     mainRepo.getAccounts(userId = userId)
-                if (response.isSuccessful) {
+                if (response.status == ResponseStatus.Success) {
                     if (!_accountsList.isEmpty()) {
                         _accountsList.clear()
                     }
-                    _accountsList.addAll(response.accounts)
+                    for (account in response.accounts) {
+                        _accountsList.add(
+                            Account(
+                                account.accountName,
+                                account.accountLogo.logo,
+                                account.totalMoney
+                            )
+                        )
+                    }
                     _totalMoney.value = getTotalMoney(response.accounts)
                     _loading.value = false
                 } else {
@@ -66,11 +74,15 @@ class AccountsViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = mainRepo.getBanks(userId = userId)
-                if (response.isSuccessful) {
+                if (response.status == ResponseStatus.Success) {
                     if (!_banksList.isEmpty()) {
                         _banksList.clear()
                     }
-                    _banksList.addAll(response.banks)
+                    for (bank in response.banks) {
+                        _banksList.add(
+                            Bank(bank.bankName, bank.bankLogo.logo)
+                        )
+                    }
                     _loading.value = false
                 } else {
                     _banksList += Bank("Error", R.drawable.error_icon)
@@ -87,6 +99,15 @@ class AccountsViewModel : ViewModel() {
         getBanks(userId)
     }
 
+    private fun getTotalMoney(accounts: List<AccountDomain>): Double {
+        var total = 0.0
+        for (account in accounts) {
+            total += account.totalMoney
+        }
+        return total
+    }
+
+
     private fun onError(message: String) {
         _errorMessage.value = message
         _loading.value = false
@@ -95,16 +116,4 @@ class AccountsViewModel : ViewModel() {
     fun clearError() {
         _errorMessage.value = ""
     }
-}
-
-data class AccountsResponse(val isSuccessful: Boolean, val accounts: List<Account>)
-data class BanksResponse(val isSuccessful: Boolean, val banks: List<Bank>)
-
-
-private fun getTotalMoney(accounts: List<Account>): Double {
-    var total = 0.0
-    for (account in accounts) {
-        total += account.totalMoney
-    }
-    return total
 }

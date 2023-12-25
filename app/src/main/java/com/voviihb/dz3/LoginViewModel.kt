@@ -27,7 +27,7 @@ class LoginViewModel : ViewModel() {
             try {
                 val response =
                     mainRepo.authUser(_loginFormState.value.email, _loginFormState.value.password)
-                if (response.isSuccessful) {
+                if (response.status == ResponseStatus.Success) {
                     if (response.result) {
                         _isLogged.value = true
                     } else {
@@ -63,11 +63,4 @@ class LoginViewModel : ViewModel() {
             password = value
         )
     }
-
-
 }
-
-
-data class LoginForm(val email: String = "", val password: String = "")
-
-data class LoginResponse(val isSuccessful: Boolean, val result: Boolean)

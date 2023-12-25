@@ -74,15 +74,10 @@ class LoginScreenFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                val loginForm by viewModel.loginFormState.collectAsState(
-                    initial = LoginForm(
-                        "",
-                        ""
-                    )
-                )
-                val logged by viewModel.isLogged.collectAsState(initial = false)
-                val loading by viewModel.loading.collectAsState(initial = false)
-                val errorMsg by viewModel.errorMessage.collectAsState(initial = "")
+                val loginForm by viewModel.loginFormState.collectAsState()
+                val logged by viewModel.isLogged.collectAsState()
+                val loading by viewModel.loading.collectAsState()
+                val errorMsg by viewModel.errorMessage.collectAsState()
 
                 Box(
                     modifier = Modifier

@@ -9,47 +9,46 @@ class MainRepo() {
     private val DEFAULT_ACCOUNT_EMAIL = "mail@mail.ru"
     private val DEFAULT_ACCOUNT_PASSWORD = "Qwerty"
     private val DELAY_TIME = 2000L
-    private val logoList = listOf(
-        R.drawable.tinkoff_logo,
-        R.drawable.sber_logo,
-        R.drawable.alfa_logo,
-        R.drawable.cash_icon
-    )
 
     suspend fun authUser(email: String, password: String) = withContext(Dispatchers.IO) {
-        val success = true //Random.nextBoolean()
+        val success = ResponseStatus.Success
         val result = (email == DEFAULT_ACCOUNT_EMAIL && password == DEFAULT_ACCOUNT_PASSWORD)
 
         delay(DELAY_TIME)
-        return@withContext LoginResponse(isSuccessful = success, result = result)
+        return@withContext LoginResponse(status = success, result = result)
     }
 
 
     suspend fun getAccounts(userId: Int = 0) = withContext(Dispatchers.IO) {
-        val accountsList = mutableListOf<Account>()
+        val accountsList = mutableListOf<AccountDomain>()
         for (i in 1..20) {
             accountsList.add(
-                Account(
+                AccountDomain(
                     "Account $i",
-                    logoList[(i - 1) % 4],
+                    when ((i - 1) % 4) {
+                        0 -> AccountLogo.TINKOFF
+                        1 -> AccountLogo.SBER
+                        2 -> AccountLogo.AlFA
+                        else -> AccountLogo.CASH
+                    },
                     1_000_000.0 / i
                 )
             )
         }
 
         delay(DELAY_TIME)
-        return@withContext AccountsResponse(true, accountsList)
+        return@withContext AccountsResponse(ResponseStatus.Success, accountsList)
     }
 
     suspend fun getBanks(userId: Int = 0) = withContext(Dispatchers.IO) {
         val banksList = mutableListOf(
-            Bank("Tinkoff", R.drawable.tinkoff_logo),
-            Bank("Sber", R.drawable.sber_logo),
-            Bank("AlfaBank", R.drawable.alfa_logo)
+            BankDomain("Tinkoff", BankLogo.TINKOFF),
+            BankDomain("Sber", BankLogo.SBER),
+            BankDomain("AlfaBank", BankLogo.AlFA)
         )
 
         delay(DELAY_TIME)
-        return@withContext BanksResponse(true, banksList)
+        return@withContext BanksResponse(ResponseStatus.Success, banksList)
 
     }
 }
