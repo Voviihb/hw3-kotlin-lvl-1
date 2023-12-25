@@ -17,16 +17,13 @@ class LoginViewModel : ViewModel() {
     private val _loginFormState = mutableStateOf(LoginForm("", ""))
     val loginFormState: State<LoginForm> = _loginFormState
 
-    private val _isLogged = mutableStateOf(false)
-    val isLogged: State<Boolean> = _isLogged
-
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
-    fun login() {
+    fun login(authFunc: () -> Unit) {
         _loading.value = true
         viewModelScope.launch {
             try {
@@ -34,7 +31,7 @@ class LoginViewModel : ViewModel() {
                     mainRepo.authUser(_loginFormState.value.email, _loginFormState.value.password)
                 if (response.status == ResponseStatus.Success) {
                     if (response.result) {
-                        _isLogged.value = true
+                        authFunc()
                     } else {
                         onError(WRONG_EMAIL_OR_PASSWORD)
                     }

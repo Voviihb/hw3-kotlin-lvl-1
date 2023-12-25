@@ -93,8 +93,8 @@ class AccountsScreenFragment : Fragment() {
                                     context = LocalContext.current,
                                     accountList = accounts
                                 )
-                                if (errorMsg != "") {
-                                    ShowError(msg = errorMsg)
+                                if (errorMsg != null) {
+                                    ShowError(msg = errorMsg ?: "")
                                 }
                             }
                         }

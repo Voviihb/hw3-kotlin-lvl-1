@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class AccountsViewModel : ViewModel() {
+    private val EXCEPTION_OCCURRED = "Exception occurred!"
+
     private val mainRepo: MainRepo = MainRepo()
 
     private val _accountsList = mutableStateListOf<Account>()
@@ -27,8 +29,8 @@ class AccountsViewModel : ViewModel() {
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
-    private val _errorMessage = mutableStateOf("")
-    val errorMessage: State<String> = _errorMessage
+    private val _errorMessage = mutableStateOf<String?>(null)
+    val errorMessage: State<String?> = _errorMessage
 
     init {
         getAccountsScreenData(getCurrentUserId())
@@ -68,7 +70,7 @@ class AccountsViewModel : ViewModel() {
                     onError((response.status as ResponseStatus.Error).message)
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Exception occurred!")
+                onError(e.message ?: EXCEPTION_OCCURRED)
             }
         }
     }
@@ -93,7 +95,7 @@ class AccountsViewModel : ViewModel() {
                     onError((response.status as ResponseStatus.Error).message)
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Exception occurred!")
+                onError(e.message ?: EXCEPTION_OCCURRED)
             }
         }
     }
@@ -118,6 +120,6 @@ class AccountsViewModel : ViewModel() {
     }
 
     fun clearError() {
-        _errorMessage.value = ""
+        _errorMessage.value = null
     }
 }

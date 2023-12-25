@@ -36,7 +36,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -61,6 +60,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.voviihb.dz3.data.LoginForm
 
@@ -75,7 +75,6 @@ class LoginScreenFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val loginForm by viewModel.loginFormState
-                val logged by viewModel.isLogged
                 val loading by viewModel.loading
                 val errorMsg by viewModel.errorMessage
 
@@ -117,24 +116,13 @@ class LoginScreenFragment : Fragment() {
                             horizontalArrangement = Arrangement.Start
                         ) {
                             LoginForm(
+                                parentFragmentManager,
                                 viewModel,
                                 loginForm,
                                 loading,
                                 errorMsg
                             )
                         }
-
-                        if (logged) {
-                            LaunchedEffect(Unit) {
-                                parentFragmentManager.beginTransaction()
-                                    .replace(
-                                        R.id.fragment_container,
-                                        AccountsScreenFragment.newInstance()
-                                    )
-                                    .commit()
-                            }
-                        }
-
                     }
                 }
             }
@@ -152,6 +140,7 @@ class LoginScreenFragment : Fragment() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginForm(
+    parentFragmentManager: FragmentManager,
     viewModel: LoginViewModel,
     loginForm: LoginForm,
     loading: Boolean,
@@ -305,7 +294,7 @@ fun LoginForm(
             IconButton(
                 onClick = {
                     viewModel.clearError()
-                    viewModel.login()
+                    viewModel.login { launchNextScreen(parentFragmentManager) }
                     keyboardController?.hide()
                 },
                 modifier = Modifier
@@ -381,3 +370,12 @@ fun ShowLoading() {
     }
 }
 
+
+fun launchNextScreen(parentFragmentManager: FragmentManager) {
+    parentFragmentManager.beginTransaction()
+        .replace(
+            R.id.fragment_container,
+            AccountsScreenFragment.newInstance()
+        )
+        .commit()
+}
