@@ -47,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.voviihb.dz3.data.Account
+import com.voviihb.dz3.data.Bank
 
 class AccountsScreenFragment : Fragment() {
 

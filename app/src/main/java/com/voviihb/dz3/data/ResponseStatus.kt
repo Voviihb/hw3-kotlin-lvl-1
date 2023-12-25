@@ -1,4 +1,4 @@
-package com.voviihb.dz3
+package com.voviihb.dz3.data
 
 sealed interface ResponseStatus {
     data object Success : ResponseStatus

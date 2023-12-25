@@ -5,6 +5,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.voviihb.dz3.data.Account
+import com.voviihb.dz3.data.AccountDomain
+import com.voviihb.dz3.data.Bank
+import com.voviihb.dz3.data.ResponseStatus
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -61,7 +65,7 @@ class AccountsViewModel : ViewModel() {
                         R.drawable.error_icon,
                         0.0
                     )
-                    onError("Fetching accounts error!")
+                    onError((response.status as ResponseStatus.Error).message)
                 }
             } catch (e: Exception) {
                 onError(e.message ?: "Exception occurred!")
@@ -86,7 +90,7 @@ class AccountsViewModel : ViewModel() {
                     _loading.value = false
                 } else {
                     _banksList += Bank("Error", R.drawable.error_icon)
-                    onError("Fetching banks error!")
+                    onError((response.status as ResponseStatus.Error).message)
                 }
             } catch (e: Exception) {
                 onError(e.message ?: "Exception occurred!")

@@ -1,25 +1,30 @@
 package com.voviihb.dz3
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.voviihb.dz3.data.LoginForm
+import com.voviihb.dz3.data.ResponseStatus
 import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
+    private val WRONG_EMAIL_OR_PASSWORD = "Wrong email or password!"
+    private val EXCEPTION_OCCURRED = "Exception occurred!"
+
     private val mainRepo: MainRepo = MainRepo()
 
-    private val _loginFormState = MutableStateFlow(LoginForm("", ""))
-    val loginFormState: StateFlow<LoginForm> = _loginFormState
+    private val _loginFormState = mutableStateOf(LoginForm("", ""))
+    val loginFormState: State<LoginForm> = _loginFormState
 
-    private val _isLogged = MutableStateFlow(false)
-    val isLogged: StateFlow<Boolean> = _isLogged
+    private val _isLogged = mutableStateOf(false)
+    val isLogged: State<Boolean> = _isLogged
 
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
+    private val _loading = mutableStateOf(false)
+    val loading: State<Boolean> = _loading
 
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage: StateFlow<String> = _errorMessage
+    private val _errorMessage = mutableStateOf<String?>(null)
+    val errorMessage: State<String?> = _errorMessage
 
     fun login() {
         _loading.value = true
@@ -31,14 +36,14 @@ class LoginViewModel : ViewModel() {
                     if (response.result) {
                         _isLogged.value = true
                     } else {
-                        onError("Wrong email or password!")
+                        onError(WRONG_EMAIL_OR_PASSWORD)
                     }
                     _loading.value = false
                 } else {
-                    onError("Login error occurred")
+                    onError((response.status as ResponseStatus.Error).message)
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Exception occurred!")
+                onError(e.message ?: EXCEPTION_OCCURRED)
             }
         }
     }
@@ -49,7 +54,7 @@ class LoginViewModel : ViewModel() {
     }
 
     fun clearError() {
-        _errorMessage.value = ""
+        _errorMessage.value = null
     }
 
     fun emailChanged(value: String) {

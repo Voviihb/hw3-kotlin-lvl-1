@@ -37,7 +37,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -63,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.voviihb.dz3.data.LoginForm
 
 
 class LoginScreenFragment : Fragment() {
@@ -74,10 +74,10 @@ class LoginScreenFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                val loginForm by viewModel.loginFormState.collectAsState()
-                val logged by viewModel.isLogged.collectAsState()
-                val loading by viewModel.loading.collectAsState()
-                val errorMsg by viewModel.errorMessage.collectAsState()
+                val loginForm by viewModel.loginFormState
+                val logged by viewModel.isLogged
+                val loading by viewModel.loading
+                val errorMsg by viewModel.errorMessage
 
                 Box(
                     modifier = Modifier
@@ -155,7 +155,7 @@ fun LoginForm(
     viewModel: LoginViewModel,
     loginForm: LoginForm,
     loading: Boolean,
-    error: String
+    error: String?
 ) {
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -200,7 +200,7 @@ fun LoginForm(
                             onNext = { focusRequester.requestFocus() }
                         ),
                         singleLine = true,
-                        isError = error != "",
+                        isError = error != null,
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Email,
@@ -208,7 +208,7 @@ fun LoginForm(
                             )
                         },
                         trailingIcon = {
-                            if (error != "") {
+                            if (error != null) {
                                 Icon(
                                     Icons.Rounded.Close,
                                     stringResource(R.string.error),
@@ -260,9 +260,9 @@ fun LoginForm(
                             onDone = { keyboardController?.hide() }
                         ),
                         singleLine = true,
-                        isError = error != "",
+                        isError = error != null,
                         supportingText = {
-                            if (error != "") {
+                            if (error != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = error,
@@ -271,7 +271,7 @@ fun LoginForm(
                             }
                         },
                         trailingIcon = {
-                            if (error != "") {
+                            if (error != null) {
                                 Icon(
                                     Icons.Rounded.Close,
                                     stringResource(R.string.error),

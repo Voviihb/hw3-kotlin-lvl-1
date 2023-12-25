@@ -1,4 +1,4 @@
-package com.voviihb.dz3
+package com.voviihb.dz3.data
 
 data class BankDomain(
     val bankName: String,
