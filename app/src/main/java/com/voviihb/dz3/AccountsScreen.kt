@@ -105,17 +105,8 @@ class AccountsScreenFragment : Fragment() {
     }
 
     companion object {
-        private var screen: AccountsScreenFragment? = null
-
-        @JvmStatic
-        fun newInstance(): AccountsScreenFragment {
-            screen?.let {
-                return it
-            }
-            val instance = AccountsScreenFragment()
-            screen = instance
-            return instance
-        }
+        fun newInstance() =
+            AccountsScreenFragment()
     }
 
 }

@@ -40,9 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -154,17 +151,9 @@ class LoginScreenFragment : Fragment() {
     }
 
     companion object {
-        private var screen: LoginScreenFragment? = null
-
         @JvmStatic
-        fun newInstance(): LoginScreenFragment {
-            screen?.let {
-                return it
-            }
-            val instance = LoginScreenFragment()
-            screen = instance
-            return instance
-        }
+        fun newInstance() =
+            LoginScreenFragment()
     }
 }
 
@@ -177,9 +166,6 @@ fun LoginForm(
     loading: Boolean,
     error: String
 ) {
-    var email by remember { mutableStateOf(loginForm.email) }
-    var password by remember { mutableStateOf(loginForm.password) }
-    Log.d("taag", loginForm.email)
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(
@@ -209,9 +195,8 @@ fun LoginForm(
 
                 ) {
                     TextField(
-                        value = email,
+                        value = loginForm.email,
                         onValueChange = {
-                            email = it
                             viewModel.emailChanged(it)
                             viewModel.clearError()
                         },
@@ -269,9 +254,8 @@ fun LoginForm(
 
                 ) {
                     TextField(
-                        value = password,
+                        value = loginForm.password,
                         onValueChange = {
-                            password = it
                             viewModel.passwordChanged(it)
                             viewModel.clearError()
                         },
@@ -302,7 +286,7 @@ fun LoginForm(
                                     stringResource(R.string.error),
                                     modifier = Modifier.padding(end = 16.dp)
                                 )
-                                password = ""
+                                viewModel.passwordChanged("")
                             }
                         },
                         leadingIcon = {
