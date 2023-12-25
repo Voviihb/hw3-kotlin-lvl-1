@@ -5,13 +5,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class AccountsViewModel : ViewModel() {
-    private val dbRepo: DBRepo = DBRepo()
+    private val mainRepo: MainRepo = MainRepo()
 
     private val _accountsList = mutableStateListOf<Account>()
     val accountsList: List<Account> = _accountsList
@@ -28,14 +26,25 @@ class AccountsViewModel : ViewModel() {
     private val _errorMessage = mutableStateOf("")
     val errorMessage: State<String> = _errorMessage
 
-    fun getAccounts(userId: Int = 0) {
+    init {
+        getAccountsScreenData(getCurrentUserId())
+    }
+
+    fun getCurrentUserId(): Int {
+        return Random.nextInt(0, 1000)
+    }
+
+    fun getAccounts(userId: Int) {
         _loading.value = true
         viewModelScope.launch {
             try {
                 val response =
-                    dbRepo.getAccounts(userId = userId)
+                    mainRepo.getAccounts(userId = userId)
                 if (response.isSuccessful) {
-                    _accountsList += response.accounts
+                    if (!_accountsList.isEmpty()) {
+                        _accountsList.clear()
+                    }
+                    _accountsList.addAll(response.accounts)
                     _totalMoney.value = getTotalMoney(response.accounts)
                     _loading.value = false
                 } else {
@@ -52,14 +61,16 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getBanks(userId: Int = 0) {
+    fun getBanks(userId: Int) {
         _loading.value = true
         viewModelScope.launch {
             try {
-                val response =
-                    dbRepo.getBanks(userId = userId)
+                val response = mainRepo.getBanks(userId = userId)
                 if (response.isSuccessful) {
-                    _banksList += response.banks
+                    if (!_banksList.isEmpty()) {
+                        _banksList.clear()
+                    }
+                    _banksList.addAll(response.banks)
                     _loading.value = false
                 } else {
                     _banksList += Bank("Error", R.drawable.error_icon)
@@ -89,43 +100,6 @@ class AccountsViewModel : ViewModel() {
 data class AccountsResponse(val isSuccessful: Boolean, val accounts: List<Account>)
 data class BanksResponse(val isSuccessful: Boolean, val banks: List<Bank>)
 
-class DBRepo() {
-    private val DELAY_TIME = 2000L
-    private val logoList = listOf(
-        R.drawable.tinkoff_logo,
-        R.drawable.sber_logo,
-        R.drawable.alfa_logo,
-        R.drawable.cash_icon
-    )
-
-    suspend fun getAccounts(userId: Int = 0) = withContext(Dispatchers.IO) {
-        val accountsList = mutableListOf<Account>()
-        for (i in 1..20) {
-            accountsList.add(
-                Account(
-                    "Account $i",
-                    logoList[(i - 1) % 4],
-                    1_000_000.0 / i
-                )
-            )
-        }
-
-        delay(DELAY_TIME)
-        return@withContext AccountsResponse(true, accountsList)
-    }
-
-    suspend fun getBanks(userId: Int = 0) = withContext(Dispatchers.IO) {
-        val banksList = mutableListOf(
-            Bank("Tinkoff", R.drawable.tinkoff_logo),
-            Bank("Sber", R.drawable.sber_logo),
-            Bank("AlfaBank", R.drawable.alfa_logo)
-        )
-
-        delay(DELAY_TIME)
-        return@withContext BanksResponse(true, banksList)
-
-    }
-}
 
 private fun getTotalMoney(accounts: List<Account>): Double {
     var total = 0.0

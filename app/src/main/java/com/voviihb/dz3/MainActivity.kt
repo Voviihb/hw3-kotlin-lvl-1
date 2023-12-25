@@ -7,10 +7,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        val lsf = LoginScreenFragment.newInstance()
-//        Log.d("!!!", "lsf " + lsf.hashCode().toString())
-//        supportFragmentManager.beginTransaction()
-//            .replace(R.id.fragment_container, lsf)
-//            .commit()
     }
 }

@@ -54,7 +54,6 @@ class AccountsScreenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val viewModel = ViewModelProvider(requireActivity())[AccountsViewModel::class.java]
-        viewModel.getAccountsScreenData(0) //fixme я не знаю, где запрашивать данные в первый раз
         return ComposeView(requireContext()).apply {
             setContent {
                 val totalMoney by viewModel.totalMoney
@@ -132,7 +131,7 @@ fun TopBar(totalMoney: Double) {
                 Icon(
                     painterResource(id = R.drawable.ruble_icon),
                     contentDescription = stringResource(R.string.currency_icon),
-                    modifier = Modifier.size(30.dp),
+                    modifier = Modifier.size(32.dp),
                 )
             }
 
@@ -149,24 +148,24 @@ fun TopBar(totalMoney: Double) {
                 onClick = { /*TODO*/ },
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .then(Modifier.size(30.dp))
+                    .then(Modifier.size(32.dp))
             ) {
                 Icon(
                     Icons.Sharp.DateRange,
                     contentDescription = stringResource(R.string.date_range),
-                    modifier = Modifier.size(30.dp),
+                    modifier = Modifier.size(32.dp),
                 )
             }
 
             IconButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .then(Modifier.size(30.dp))
+                    .then(Modifier.size(32.dp))
             ) {
                 Icon(
                     Icons.Sharp.Add,
                     contentDescription = stringResource(R.string.add_icon),
-                    modifier = Modifier.size(30.dp),
+                    modifier = Modifier.size(32.dp),
                 )
             }
         }
@@ -216,7 +215,7 @@ fun ConnectedBanks(context: Context, bankList: List<Bank>) {
                                 Icons.Sharp.Add,
                                 contentDescription = stringResource(R.string.add_icon),
                                 modifier = Modifier
-                                    .size(30.dp)
+                                    .size(32.dp)
                                     .padding(4.dp)
                                     .border(1.dp, Color.Black)
                             )
@@ -336,7 +335,7 @@ fun CurrentAccounts(context: Context, accountList: List<Account>) {
                                         Icons.Sharp.Add,
                                         contentDescription = stringResource(R.string.add_icon),
                                         modifier = Modifier
-                                            .size(30.dp)
+                                            .size(32.dp)
                                             .padding(4.dp)
                                             .border(1.dp, Color.Black)
                                     )
@@ -392,7 +391,7 @@ fun AccountsItem(context: Context, account: Account) {
                             painterResource(id = account.accountLogo),
                             contentDescription = stringResource(R.string.account_logo),
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(32.dp)
                                 .padding(end = 8.dp)
                         )
                         Text(

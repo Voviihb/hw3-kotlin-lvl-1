@@ -1,7 +1,6 @@
 package com.voviihb.dz3
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,10 +70,7 @@ class LoginScreenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-//        val viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         val viewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
-
-        Log.d("!!!", "vm " + viewModel.hashCode().toString())
 
         return ComposeView(requireContext()).apply {
             setContent {

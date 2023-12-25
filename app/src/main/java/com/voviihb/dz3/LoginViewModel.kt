@@ -1,17 +1,13 @@
 package com.voviihb.dz3
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LoginViewModel : ViewModel() {
-    private val loginRepo: LoginRepo = LoginRepo()
+    private val mainRepo: MainRepo = MainRepo()
 
     private val _loginFormState = MutableStateFlow(LoginForm("", ""))
     val loginFormState: StateFlow<LoginForm> = _loginFormState
@@ -30,11 +26,10 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response =
-                    loginRepo.authUser(_loginFormState.value.email, _loginFormState.value.password)
+                    mainRepo.authUser(_loginFormState.value.email, _loginFormState.value.password)
                 if (response.isSuccessful) {
                     if (response.result) {
                         _isLogged.value = true
-                        Log.d("!!!", "LOGGED")
                     } else {
                         onError("Wrong email or password!")
                     }
@@ -76,16 +71,3 @@ class LoginViewModel : ViewModel() {
 data class LoginForm(val email: String = "", val password: String = "")
 
 data class LoginResponse(val isSuccessful: Boolean, val result: Boolean)
-
-class LoginRepo {
-    private val DEFAULT_ACCOUNT_EMAIL = "mail@mail.ru"
-    private val DEFAULT_ACCOUNT_PASSWORD = "Qwerty"
-    private val DELAY_TIME = 2000L
-    suspend fun authUser(email: String, password: String) = withContext(Dispatchers.IO) {
-        val success = true //Random.nextBoolean()
-        val result = (email == DEFAULT_ACCOUNT_EMAIL && password == DEFAULT_ACCOUNT_PASSWORD)
-
-        delay(DELAY_TIME)
-        return@withContext LoginResponse(isSuccessful = success, result = result)
-    }
-}
