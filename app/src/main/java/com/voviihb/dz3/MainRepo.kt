@@ -1,11 +1,10 @@
 package com.voviihb.dz3
 
 import com.voviihb.dz3.data.AccountDomain
-import com.voviihb.dz3.data.AccountLogo
 import com.voviihb.dz3.data.AccountsResponse
 import com.voviihb.dz3.data.BankDomain
-import com.voviihb.dz3.data.BankLogo
 import com.voviihb.dz3.data.BanksResponse
+import com.voviihb.dz3.data.ItemLogo
 import com.voviihb.dz3.data.LoginResponse
 import com.voviihb.dz3.data.ResponseStatus
 import kotlinx.coroutines.Dispatchers
@@ -35,10 +34,10 @@ class MainRepo() {
                 AccountDomain(
                     "Account $i",
                     when ((i - 1) % 4) {
-                        0 -> AccountLogo.TINKOFF
-                        1 -> AccountLogo.SBER
-                        2 -> AccountLogo.AlFA
-                        else -> AccountLogo.CASH
+                        0 -> ItemLogo.TINKOFF
+                        1 -> ItemLogo.SBER
+                        2 -> ItemLogo.AlFA
+                        else -> ItemLogo.CASH
                     },
                     1_000_000.0 / i
                 )
@@ -51,9 +50,9 @@ class MainRepo() {
 
     suspend fun getBanks(userId: Int = 0) = withContext(Dispatchers.IO) {
         val banksList = mutableListOf(
-            BankDomain("Tinkoff", BankLogo.TINKOFF),
-            BankDomain("Sber", BankLogo.SBER),
-            BankDomain("AlfaBank", BankLogo.AlFA)
+            BankDomain("Tinkoff", ItemLogo.TINKOFF),
+            BankDomain("Sber", ItemLogo.SBER),
+            BankDomain("AlfaBank", ItemLogo.AlFA)
         )
         val status = ResponseStatus.Success //ResponseStatus.Error("Fetching banks error!")
 

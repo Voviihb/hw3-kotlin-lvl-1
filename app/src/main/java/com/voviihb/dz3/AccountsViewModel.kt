@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.voviihb.dz3.data.Account
 import com.voviihb.dz3.data.AccountDomain
+import com.voviihb.dz3.data.AccountError
 import com.voviihb.dz3.data.Bank
+import com.voviihb.dz3.data.IAccount
+import com.voviihb.dz3.data.LogoStorage
 import com.voviihb.dz3.data.ResponseStatus
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -17,8 +20,8 @@ class AccountsViewModel : ViewModel() {
 
     private val mainRepo: MainRepo = MainRepo()
 
-    private val _accountsList = mutableStateListOf<Account>()
-    val accountsList: List<Account> = _accountsList
+    private val _accountsList = mutableStateListOf<IAccount>()
+    val accountsList: List<IAccount> = _accountsList
 
     private val _banksList = mutableStateListOf<Bank>()
     val banksList: List<Bank> = _banksList
@@ -54,7 +57,7 @@ class AccountsViewModel : ViewModel() {
                         _accountsList.add(
                             Account(
                                 account.accountName,
-                                account.accountLogo.logo,
+                                LogoStorage.getImage(account.accountLogo),
                                 account.totalMoney
                             )
                         )
@@ -62,11 +65,7 @@ class AccountsViewModel : ViewModel() {
                     _totalMoney.value = getTotalMoney(response.accounts)
                     _loading.value = false
                 } else {
-                    _accountsList += Account(
-                        "Error",
-                        R.drawable.error_icon,
-                        0.0
-                    )
+                    _accountsList += AccountError()
                     onError((response.status as ResponseStatus.Error).message)
                 }
             } catch (e: Exception) {
@@ -86,7 +85,7 @@ class AccountsViewModel : ViewModel() {
                     }
                     for (bank in response.banks) {
                         _banksList.add(
-                            Bank(bank.bankName, bank.bankLogo.logo)
+                            Bank(bank.bankName, LogoStorage.getImage(bank.bankLogo))
                         )
                     }
                     _loading.value = false

@@ -48,7 +48,9 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.voviihb.dz3.data.Account
+import com.voviihb.dz3.data.AccountError
 import com.voviihb.dz3.data.Bank
+import com.voviihb.dz3.data.IAccount
 
 class AccountsScreenFragment : Fragment() {
 
@@ -280,7 +282,7 @@ fun BankCard(context: Context, bank: Bank) {
 
 
 @Composable
-fun CurrentAccounts(context: Context, accountList: List<Account>) {
+fun CurrentAccounts(context: Context, accountList: List<IAccount>) {
 
     Column(
         modifier = Modifier
@@ -358,7 +360,7 @@ fun CurrentAccounts(context: Context, accountList: List<Account>) {
 }
 
 @Composable
-fun AccountsItem(context: Context, account: Account) {
+fun AccountsItem(context: Context, account: IAccount) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -367,7 +369,7 @@ fun AccountsItem(context: Context, account: Account) {
                 Toast
                     .makeText(
                         context,
-                        "Selected ${account.accountName}",
+                        "Selected ${(if (account is Account) account.accountName else (account as AccountError).accountName)}",
                         Toast.LENGTH_SHORT
                     )
                     .show()
@@ -390,14 +392,14 @@ fun AccountsItem(context: Context, account: Account) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
-                            painterResource(id = account.accountLogo),
+                            painterResource(id = (if (account is Account) account.accountLogo else (account as AccountError).accountLogo)),
                             contentDescription = stringResource(R.string.account_logo),
                             modifier = Modifier
                                 .size(32.dp)
                                 .padding(end = 8.dp)
                         )
                         Text(
-                            text = account.accountName,
+                            text = (if (account is Account) account.accountName else (account as AccountError).accountName),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.Black
@@ -410,7 +412,7 @@ fun AccountsItem(context: Context, account: Account) {
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(
-                        text = String.format("%.2f", account.totalMoney),
+                        text = String.format("%.2f", (if (account is Account) account.totalMoney else (account as AccountError).totalMoney)),
                         fontSize = 16.sp,
                     )
                     Icon(
