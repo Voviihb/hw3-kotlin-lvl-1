@@ -1,4 +1,25 @@
 <resources>
     <string name="app_name">DZ3</string>
     <string name="logo">logo</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="e_mail_hint">E-Mail</string>
+    <string name="email_logo">Email logo</string>
+    <string name="error">error</string>
+    <string name="password_hint">Password</string>
+    <string name="lock_logo">Lock logo</string>
+    <string name="check_logo">Check Logo</string>
+    <string name="balance">Balance</string>
+    <string name="new_connection">New connection</string>
+    <string name="connected_banks">Connected banks</string>
+    <string name="currency_icon">Currency icon</string>
+    <string name="date_range">Date range</string>
+    <string name="add_icon">Add icon</string>
+    <string name="bank_logo">Bank logo</string>
+    <string name="current_accounts">Current accounts</string>
+    <string name="new_card_bank_deposit_loan">New card, bank deposit, loan …</string>
+    <string name="account_logo">Account logo</string>
+    <string name="add_new_selected">add new selected</string>
+    <string name="selected_hint">selected</string>
 </resources>
