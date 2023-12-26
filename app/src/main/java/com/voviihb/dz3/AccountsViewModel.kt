@@ -39,6 +39,7 @@ class AccountsViewModel : ViewModel() {
         getAccountsScreenData(getCurrentUserId())
     }
 
+    // заглушка, позже будет реализована
     private fun getCurrentUserId(): Int {
         return Random.nextInt(0, 1000)
     }
@@ -50,7 +51,7 @@ class AccountsViewModel : ViewModel() {
                 val response =
                     mainRepo.getAccounts(userId = userId)
                 if (response.status == ResponseStatus.Success) {
-                    if (!_accountsList.isEmpty()) {
+                    if (_accountsList.isNotEmpty()) {
                         _accountsList.clear()
                     }
                     for (account in response.accounts) {
@@ -80,7 +81,7 @@ class AccountsViewModel : ViewModel() {
             try {
                 val response = mainRepo.getBanks(userId = userId)
                 if (response.status == ResponseStatus.Success) {
-                    if (!_banksList.isEmpty()) {
+                    if (_banksList.isNotEmpty()) {
                         _banksList.clear()
                     }
                     for (bank in response.banks) {
