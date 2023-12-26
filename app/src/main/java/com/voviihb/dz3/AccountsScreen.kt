@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.getString
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.voviihb.dz3.data.Account
@@ -196,7 +197,7 @@ fun ConnectedBanks(context: Context, bankList: List<Bank>) {
                     onClick = {
                         Toast.makeText(
                             context,
-                            "add new selected",
+                            getString(context, R.string.add_new_selected),
                             Toast.LENGTH_SHORT
                         ).show()
                     },
@@ -246,7 +247,7 @@ fun BankCard(context: Context, bank: Bank) {
         onClick = {
             Toast.makeText(
                 context,
-                "selected ${bank.bankName}",
+                "${getString(context, R.string.selected_hint)} ${bank.bankName}",
                 Toast.LENGTH_SHORT
             ).show()
         },
@@ -308,7 +309,7 @@ fun CurrentAccounts(context: Context, accountList: List<IAccount>) {
                             Toast
                                 .makeText(
                                     context,
-                                    "add new selected",
+                                    getString(context, R.string.add_new_selected),
                                     Toast.LENGTH_SHORT
                                 )
                                 .show()
@@ -369,7 +370,10 @@ fun AccountsItem(context: Context, account: IAccount) {
                 Toast
                     .makeText(
                         context,
-                        "Selected ${(if (account is Account) account.accountName else (account as AccountError).accountName)}",
+                        "${getString(context, R.string.selected_hint)} ${
+                            (if (account is Account) account.accountName
+                            else (account as AccountError).accountName)
+                        }",
                         Toast.LENGTH_SHORT
                     )
                     .show()
@@ -412,7 +416,10 @@ fun AccountsItem(context: Context, account: IAccount) {
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(
-                        text = String.format("%.2f", (if (account is Account) account.totalMoney else (account as AccountError).totalMoney)),
+                        text = String.format(
+                            "%.2f",
+                            (if (account is Account) account.totalMoney else (account as AccountError).totalMoney)
+                        ),
                         fontSize = 16.sp,
                     )
                     Icon(

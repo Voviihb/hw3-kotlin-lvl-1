@@ -20,4 +20,6 @@
     <string name="current_accounts">Current accounts</string>
     <string name="new_card_bank_deposit_loan">New card, bank deposit, loan …</string>
     <string name="account_logo">Account logo</string>
+    <string name="add_new_selected">add new selected</string>
+    <string name="selected_hint">selected</string>
 </resources>
