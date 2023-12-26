@@ -39,11 +39,11 @@ class AccountsViewModel : ViewModel() {
         getAccountsScreenData(getCurrentUserId())
     }
 
-    fun getCurrentUserId(): Int {
+    private fun getCurrentUserId(): Int {
         return Random.nextInt(0, 1000)
     }
 
-    fun getAccounts(userId: Int) {
+    private fun getAccounts(userId: Int) {
         _loading.value = true
         viewModelScope.launch {
             try {
@@ -74,7 +74,7 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getBanks(userId: Int) {
+    private fun getBanks(userId: Int) {
         _loading.value = true
         viewModelScope.launch {
             try {
@@ -99,7 +99,7 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getAccountsScreenData(userId: Int) {
+    private fun getAccountsScreenData(userId: Int) {
         getAccounts(userId)
         getBanks(userId)
     }

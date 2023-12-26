@@ -128,12 +128,6 @@ class LoginScreenFragment : Fragment() {
             }
         }
     }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            LoginScreenFragment()
-    }
 }
 
 

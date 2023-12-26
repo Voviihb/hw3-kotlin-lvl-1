@@ -102,7 +102,6 @@ class AccountsScreenFragment : Fragment() {
                             }
                         }
                     }
-
                 }
             }
         }
