@@ -71,7 +71,11 @@ class LoginScreenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val viewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
-
+        val preferencesManager = PreferencesManager(requireContext())
+        val data = preferencesManager.getData("logged", "false")
+        if (isLogged(data = data)) {
+            launchNextScreen(parentFragmentManager)
+        }
         return ComposeView(requireContext()).apply {
             setContent {
                 val loginForm by viewModel.loginFormState
@@ -117,6 +121,7 @@ class LoginScreenFragment : Fragment() {
                         ) {
                             LoginForm(
                                 parentFragmentManager,
+                                preferencesManager,
                                 viewModel,
                                 loginForm,
                                 loading,
@@ -135,6 +140,7 @@ class LoginScreenFragment : Fragment() {
 @Composable
 fun LoginForm(
     parentFragmentManager: FragmentManager,
+    preferencesManager: PreferencesManager,
     viewModel: LoginViewModel,
     loginForm: LoginForm,
     loading: Boolean,
@@ -288,7 +294,10 @@ fun LoginForm(
             IconButton(
                 onClick = {
                     viewModel.clearError()
-                    viewModel.login { launchNextScreen(parentFragmentManager) }
+                    viewModel.login(
+                        authFunc = { launchNextScreen(parentFragmentManager) },
+                        onLogin = { writeLogged(preferencesManager) }
+                    )
                     keyboardController?.hide()
                 },
                 modifier = Modifier
@@ -372,4 +381,16 @@ fun launchNextScreen(parentFragmentManager: FragmentManager) {
             AccountsScreenFragment.newInstance()
         )
         .commit()
+}
+
+
+fun isLogged(data: String): Boolean {
+    if (data == "true") {
+        return true
+    }
+    return false
+}
+
+fun writeLogged(preferencesManager: PreferencesManager) {
+    preferencesManager.saveData("logged", "true")
 }

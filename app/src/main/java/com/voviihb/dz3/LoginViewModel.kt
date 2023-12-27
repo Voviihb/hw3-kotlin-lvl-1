@@ -23,7 +23,7 @@ class LoginViewModel : ViewModel() {
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
-    fun login(authFunc: () -> Unit) {
+    fun login(authFunc: () -> Unit, onLogin: () -> Unit) {
         _loading.value = true
         viewModelScope.launch {
             try {
@@ -32,6 +32,7 @@ class LoginViewModel : ViewModel() {
                 if (response.status == ResponseStatus.Success) {
                     if (response.result) {
                         authFunc()
+                        onLogin()
                     } else {
                         onError(WRONG_EMAIL_OR_PASSWORD)
                     }
