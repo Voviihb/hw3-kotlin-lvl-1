@@ -22,4 +22,20 @@
     <string name="account_logo">Account logo</string>
     <string name="add_new_selected">add new selected</string>
     <string name="selected_hint">selected</string>
+    <string name="amount1">Сумма денег</string>
+    <string name="amount2">Доходы</string>
+    <string name="amount3">Расходы</string>
+    <string name="title1">Общий баланс</string>
+    <string name="title2">Итоги за период</string>
+    <string name="title3">История</string>
+    <string name="save">Сохранить</string>
+    <string name="category">Категория</string>
+    <string name="comment">Комментарий</string>
+    <string name="bank_account">Счёт списания</string>
+    <string name="summa">Потраченная сумма (в рублях)</string>
+    <string name="date">Дата</string>
+    <string name="first">Операции</string>
+    <string name="second">Счета</string>
+    <string name="third">Аналитика</string>
+    <string name="forth">Ещё</string>
 </resources>

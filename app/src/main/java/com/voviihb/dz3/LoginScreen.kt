@@ -74,7 +74,7 @@ class LoginScreenFragment : Fragment() {
         val preferencesManager = PreferencesManager(requireContext())
         val data = preferencesManager.getData("logged", "false")
         if (isLogged(data = data)) {
-            launchNextScreen(parentFragmentManager)
+            launchNextScreen(parentFragmentManager) {OperationsScreenFragment.newInstance()}
         }
         return ComposeView(requireContext()).apply {
             setContent {
@@ -206,15 +206,18 @@ fun LoginForm(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Gray,
-                            disabledTextColor = Color.Transparent,
-                            containerColor = Color.White,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = Color.White,
+                            errorContainerColor = Color.White,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent
-                        )
+                            errorIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.Gray,
+                            unfocusedTextColor = Color.Gray,
+                            disabledTextColor = Color.Gray,
+                        ),
                     )
                 }
 
@@ -279,14 +282,17 @@ fun LoginForm(
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Gray,
-                            disabledTextColor = Color.Transparent,
-                            containerColor = Color.White,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = Color.White,
+                            errorContainerColor = Color.White,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent
+                            errorIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.Gray,
+                            unfocusedTextColor = Color.Gray,
+                            disabledTextColor = Color.Gray,
                         ),
                     )
                 }
@@ -295,7 +301,9 @@ fun LoginForm(
                 onClick = {
                     viewModel.clearError()
                     viewModel.login(
-                        authFunc = { launchNextScreen(parentFragmentManager) },
+                        authFunc = { launchNextScreen(parentFragmentManager
+                        ) { OperationsScreenFragment.newInstance() }
+                        },
                         onLogin = { writeLogged(preferencesManager) }
                     )
                     keyboardController?.hide()
@@ -374,11 +382,11 @@ fun ShowLoading() {
 }
 
 
-fun launchNextScreen(parentFragmentManager: FragmentManager) {
+fun launchNextScreen(parentFragmentManager: FragmentManager, func: () -> Fragment) {
     parentFragmentManager.beginTransaction()
         .replace(
             R.id.fragment_container,
-            AccountsScreenFragment.newInstance()
+            func()
         )
         .commit()
 }
